@@ -62,6 +62,26 @@ An advanced analytics platform for identifying unusual billing patterns and pote
 - Temporal pattern recognition
 - Provider-level aggregation and benchmarking
 
+## Deployment
+
+### Option 1: Manus Hosting (Recommended)
+
+The easiest way to deploy this application:
+
+1. Click the **Publish** button in the Manus Management UI
+2. Choose your custom domain
+3. Done! Everything is pre-configured.
+
+### Option 2: Vercel
+
+For Vercel deployment, see the detailed guide: [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)
+
+**Note:** Vercel requires external database, S3 storage, and custom OAuth setup. Total cost: $50-100/month.
+
+### Option 3: Other Platforms
+
+This app can also be deployed to Railway, Render, Heroku, or DigitalOcean App Platform.
+
 ## Getting Started
 
 ### Prerequisites
