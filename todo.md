@@ -76,4 +76,4 @@
 - [ ] Create user guide for fraud detection features
 - [ ] Document fraud risk scoring methodology
 - [ ] Add inline help tooltips for complex features
-- [ ] Create checkpoint for deployment
+- [x] Create checkpoint for deployment
