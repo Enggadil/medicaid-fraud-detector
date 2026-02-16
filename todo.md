@@ -83,3 +83,8 @@
 - [x] Write deployment guide documentation
 - [x] Configure environment variables for production
 - [x] Set up database connection for Vercel
+
+## Content & Marketing
+- [x] Write LinkedIn article for open-source announcement
+- [ ] Create social media graphics
+- [ ] Prepare demo video or screenshots
