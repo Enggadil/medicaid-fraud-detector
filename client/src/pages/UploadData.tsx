@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Upload, FileText, CheckCircle2, AlertCircle, ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
+import JSZip from "jszip";
 
 export default function UploadData() {
   const [, setLocation] = useLocation();
@@ -60,9 +61,16 @@ export default function UploadData() {
       "application/x-zip-compressed",
     ];
 
-    if (!validTypes.includes(selectedFile.type) && !selectedFile.name.endsWith('.csv')) {
+    if (!validTypes.includes(selectedFile.type) && !selectedFile.name.endsWith('.csv') && !selectedFile.name.endsWith('.zip')) {
       setError("Please upload a CSV or ZIP file");
       return;
+    }
+
+    // Warn about large files (> 100MB)
+    const maxSize = 100 * 1024 * 1024; // 100MB
+    if (selectedFile.size > maxSize) {
+      const sizeMB = (selectedFile.size / 1024 / 1024).toFixed(2);
+      toast.warning(`Large file detected (${sizeMB} MB). Processing may take several minutes and could fail for very large files. Consider using a smaller sample.`);
     }
 
     setFile(selectedFile);
@@ -84,41 +92,68 @@ export default function UploadData() {
     setError("");
 
     try {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        const content = e.target?.result as string;
-        
-        setStatus("Uploading to server...");
+      let csvContent: string;
+      let fileName = file.name;
+
+      // Check if file is ZIP
+      if (file.name.endsWith('.zip')) {
+        setStatus("Extracting ZIP file...");
+        setProgress(5);
+
+        const arrayBuffer = await file.arrayBuffer();
+        const zip = new JSZip();
+        const zipContents = await zip.loadAsync(arrayBuffer);
+
+        // Find the first CSV file in the ZIP
+        const csvFiles = Object.keys(zipContents.files).filter(
+          name => name.endsWith('.csv') && !name.startsWith('__MACOSX')
+        );
+
+        if (csvFiles.length === 0) {
+          throw new Error("No CSV file found in ZIP archive");
+        }
+
+        setStatus(`Extracting ${csvFiles[0]}...`);
+        const csvFile = zipContents.files[csvFiles[0]];
+        if (!csvFile) {
+          throw new Error("Failed to extract CSV file");
+        }
+        csvContent = await csvFile.async("text");
+        fileName = csvFiles[0];
         setProgress(10);
-
-        // Simulate progress updates
-        const progressInterval = setInterval(() => {
-          setProgress((prev) => {
-            if (prev >= 90) {
-              clearInterval(progressInterval);
-              return 90;
-            }
-            return prev + 10;
-          });
-        }, 500);
-
-        await uploadMutation.mutateAsync({
-          fileName: file.name,
-          fileContent: content,
-          fileSize: file.size,
+      } else {
+        // Read CSV directly
+        csvContent = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result as string);
+          reader.onerror = () => reject(new Error("Failed to read file"));
+          reader.readAsText(file);
         });
+        setProgress(10);
+      }
 
-        clearInterval(progressInterval);
-        setProgress(100);
-        setStatus("Analysis complete!");
-      };
+      setStatus("Uploading to server...");
 
-      reader.onerror = () => {
-        setError("Failed to read file");
-        setUploading(false);
-      };
+      // Simulate progress updates
+      const progressInterval = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 500);
 
-      reader.readAsText(file);
+      await uploadMutation.mutateAsync({
+        fileName: fileName,
+        fileContent: csvContent,
+        fileSize: csvContent.length,
+      });
+
+      clearInterval(progressInterval);
+      setProgress(100);
+      setStatus("Analysis complete!");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
       setUploading(false);

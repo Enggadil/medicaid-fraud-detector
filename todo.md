@@ -93,3 +93,10 @@
 - [x] Fix CSV file upload not working
 - [x] Debug file processing errors
 - [x] Test with actual HHS Medicaid dataset
+
+## New Bug Fixes
+- [x] Fix ZIP file upload - currently fails with "Failed to read file"
+- [x] Add ZIP extraction support to handle compressed CSV files
+- [x] Add file size warnings for large files
+- [x] Create guide for handling large datasets
+- [ ] Handle large files (3+ GB) with streaming or chunked processing (future enhancement)
