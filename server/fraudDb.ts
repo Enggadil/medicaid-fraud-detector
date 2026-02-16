@@ -76,6 +76,23 @@ export async function upsertProvider(data: InsertProvider) {
   });
 }
 
+export async function insertProviders(data: InsertProvider[]) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Insert in batches to avoid query size limits
+  const batchSize = 100;
+  for (let i = 0; i < data.length; i += batchSize) {
+    const batch = data.slice(i, i + batchSize);
+    await db.insert(providers).values(batch).onDuplicateKeyUpdate({
+      set: {
+        name: sql`VALUES(name)`,
+        specialty: sql`VALUES(specialty)`,
+      }
+    });
+  }
+}
+
 export async function getProviderByNpi(npi: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -192,6 +209,20 @@ export async function createAlert(data: InsertAlert) {
   
   const result = await db.insert(alerts).values(data);
   return result[0].insertId;
+}
+
+export async function insertAlerts(data: InsertAlert[]) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  if (data.length === 0) return;
+  
+  // Insert in batches
+  const batchSize = 100;
+  for (let i = 0; i < data.length; i += batchSize) {
+    const batch = data.slice(i, i + batchSize);
+    await db.insert(alerts).values(batch);
+  }
 }
 
 export async function getAlertsByAnalysis(analysisId: number) {

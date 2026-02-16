@@ -100,3 +100,16 @@
 - [x] Add file size warnings for large files
 - [x] Create guide for handling large datasets
 - [ ] Handle large files (3+ GB) with streaming or chunked processing (future enhancement)
+
+## Backend Processing for Large Files
+- [x] Export missing types from fraudDetection
+- [x] Add batch insert functions to fraudDb
+- [x] Create standalone Python script for local processing
+- [x] Add comprehensive fraud detection algorithms to Python script
+- [x] Generate multiple output reports (CSV, TXT)
+- [x] Create detailed usage guide for Python script
+- [ ] Fix remaining TypeScript errors in largeFileProcessor (web version)
+- [ ] Implement direct S3 upload with presigned URLs (web version)
+- [ ] Create background job processing system with streaming (web version)
+- [ ] Add progress tracking API endpoints (web version)
+- [ ] Build job queue management UI (web version)

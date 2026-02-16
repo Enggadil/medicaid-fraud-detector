@@ -9,7 +9,7 @@
  * 5. Composite Risk Scoring (0-100 scale)
  */
 
-interface TransactionRecord {
+export interface TransactionRecord {
   billingProviderNpi: string;
   servicingProviderNpi: string;
   hcpcsCode: string;
@@ -19,7 +19,7 @@ interface TransactionRecord {
   totalPaid: string;
 }
 
-interface ProcessedTransaction extends TransactionRecord {
+export interface ProcessedTransaction extends TransactionRecord {
   costPerClaim: number;
   claimsPerBeneficiary: number;
   costZScore: number;
@@ -28,7 +28,7 @@ interface ProcessedTransaction extends TransactionRecord {
   anomalyFlag: number;
 }
 
-interface ProcedureBenchmark {
+export interface ProcedureBenchmark {
   hcpcsCode: string;
   avgCost: number;
   stdCost: number;
@@ -39,7 +39,7 @@ interface ProcedureBenchmark {
   sampleSize: number;
 }
 
-interface ProviderStats {
+export interface ProviderStats {
   npi: string;
   totalSpending: number;
   totalClaims: number;
