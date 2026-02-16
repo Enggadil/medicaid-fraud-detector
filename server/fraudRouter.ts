@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "./_core/trpc";
+import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { processUploadedFile } from "./dataProcessor";
 import {
   getRecentAnalysisRuns,
@@ -19,7 +19,7 @@ export const fraudRouter = router({
   /**
    * Upload and analyze data file
    */
-  uploadData: protectedProcedure
+  uploadData: publicProcedure
     .input(
       z.object({
         fileName: z.string(),
@@ -28,8 +28,10 @@ export const fraudRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      // Use user ID if authenticated, otherwise use 0 for anonymous uploads
+      const userId = ctx.user?.id || 0;
       const analysisId = await processUploadedFile(
-        ctx.user.id,
+        userId,
         input.fileName,
         input.fileContent,
         input.fileSize

@@ -88,3 +88,8 @@
 - [x] Write LinkedIn article for open-source announcement
 - [ ] Create social media graphics
 - [ ] Prepare demo video or screenshots
+
+## Bug Fixes
+- [x] Fix CSV file upload not working
+- [x] Debug file processing errors
+- [x] Test with actual HHS Medicaid dataset
